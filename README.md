@@ -7,6 +7,47 @@ A starter computer-vision project for the mini project **AI-Based Vision Guided 
 
 This project implements the vision and object-detection part of the system. Converting image detections into 3D grasp poses and synchronizing physical robot arms are separate integration steps.
 
+## System overview
+
+The review materials describe an end-to-end simulation workflow:
+
+1. Create a dual-arm scene and RGB-D camera in NVIDIA Isaac Sim; generate or capture images and prepare YOLO-format labels.
+2. Train and validate YOLOv8 to detect cubes and cylinders by shape and color.
+3. Subscribe to the simulated RGB and depth streams through ROS 2. Use each detection's image-space center and corresponding depth to estimate a 3D point in the camera frame.
+4. Transform that point into the robot base frame with ROS 2 TF, then calculate target joint angles with MATLAB inverse kinematics for pick-and-place motion.
+
+The pinhole-camera back-projection used to turn a pixel and its depth into a camera-frame point is:
+
+```text
+X = (u - cx) * Z / fx
+Y = (v - cy) * Z / fy
+Z = depth(u, v)
+```
+
+Here `(u, v)` is the pixel coordinate, `Z` is its depth, `(cx, cy)` is the camera principal point, and `(fx, fy)` are the focal lengths in pixels. The depth image and RGB detections must be aligned, and the camera intrinsics and TF frame direction must match the simulated camera.
+
+The slides report that the workflow was exercised in Isaac Sim, including YOLO detections, depth-based position estimates, camera-to-base transforms, and MATLAB IK. They also describe debugging data flow and frame-alignment issues, and switching from MoveIt IK attempts to MATLAB calculations. These are project-review results, not benchmark claims: the charts in the slides do not establish generalization or real-robot performance.
+
+**Repository scope:** `train.py`, `validate.py`, and `predict.py` provide the runnable YOLO training, evaluation, and image-inference starter. The ROS 2 graph/nodes, Isaac Sim scene, depth-to-world integration, and MATLAB IK shown in the review materials are not included as executable project files here. Robot-control integration and real-hardware validation remain separate work.
+
+### Figures from the project review
+
+**Perception-to-action workflow**
+
+![Project methodology: synthetic data and dataset preparation, YOLO training and validation, depth fusion, coordinate transformation, grasp planning, and motion execution](docs/images/methodology-pipeline.png)
+
+**Isaac Sim scene and example detections**
+
+![Dual-arm manipulator and colored objects in the Isaac Sim scene](docs/images/isaac-sim-scene.jpeg)
+
+![Example YOLO detections on the simulated scene](docs/images/yolo-detections-isaac-sim.jpg)
+
+**Integration and motion-planning illustrations**
+
+![ROS 2 Action Graph used for camera and robot communication](docs/images/ros2-action-graph.png)
+
+![MATLAB inverse-kinematics target-point visualization](docs/images/ik-target-point.jpeg)
+
 ### Requirements
 
 - Python 3.9 or later
@@ -29,7 +70,8 @@ This project implements the vision and object-detection part of the system. Conv
 ├── train.py
 ├── validate.py
 ├── predict.py
-└── requirements.txt
+├── requirements.txt
+└── docs/images/                # Figures from the project review
 ```
 
 Place each image in the appropriate `images` directory and its label file in the matching `labels` directory. For example:
@@ -110,4 +152,4 @@ python predict.py --source path\to\test_image.jpg --conf 0.4
 
 ### Dataset configuration
 
-Edit `dataset.yaml` to match your dataset location and object classes. The included configuration expects two classes (`cube` and `cylinder`); update it if your Isaac Sim dataset uses different classes.
+Edit `dataset.yaml` to match your dataset location and object classes. The included example follows the eight shape-and-color labels shown in the review materials (`cube_green`, `cube_red`, `cube_white`, `cube_black`, `cylinder_red`, `cylinder_green`, `cylinder_white`, and `cylinder_black`). Keep the class IDs in your YOLO label files consistent with this order, or change both the configuration and labels to match your dataset.
