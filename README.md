@@ -48,6 +48,16 @@ The slides report that the workflow was exercised in Isaac Sim, including YOLO d
 
 ![MATLAB inverse-kinematics target-point visualization](docs/images/ik-target-point.jpeg)
 
+### Video walkthroughs
+
+Open a clip to watch the corresponding project demonstration:
+
+- [Pick-and-place demonstration](docs/videos/pick-and-place.mp4) — robot pick-and-place sequence.
+- [Simulation walkthrough](docs/videos/simulation-walkthrough.mp4) — project simulation demonstration.
+- [YOLO detection demonstration](docs/videos/yolo-detection.mp4) — object detection in the scene.
+
+On GitHub, select a video link to open the clip in the repository's video viewer.
+
 ### Requirements
 
 - Python 3.9 or later
@@ -71,7 +81,9 @@ The slides report that the workflow was exercised in Isaac Sim, including YOLO d
 ├── validate.py
 ├── predict.py
 ├── requirements.txt
-└── docs/images/                # Figures from the project review
+└── docs/
+    ├── images/                 # Figures from the project review
+    └── videos/                 # Project walkthrough clips
 ```
 
 Place each image in the appropriate `images` directory and its label file in the matching `labels` directory. For example:
