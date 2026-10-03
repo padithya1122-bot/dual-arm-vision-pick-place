@@ -1,0 +1,12 @@
+train: dataset/images/train
+val: dataset/images/val
+
+names:
+  0: cube_green
+  1: cube_red
+  2: cube_white
+  3: cube_black
+  4: cylinder_red
+  5: cylinder_green
+  6: cylinder_white
+  7: cylinder_black

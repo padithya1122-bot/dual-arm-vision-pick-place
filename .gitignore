@@ -218,3 +218,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# YOLO training outputs and local dataset files
+runs/
+dataset/images/**
+!dataset/images/**/
+!dataset/images/**/.gitkeep
+dataset/labels/**
+!dataset/labels/**/
+!dataset/labels/**/.gitkeep
